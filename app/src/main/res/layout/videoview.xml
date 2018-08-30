@@ -3,30 +3,44 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <LinearLayout
+
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:orientation="vertical"
+        android:background="#ff000000"
         android:id="@+id/video_contianer"
         >
+
+        <VideoView
+            android:id="@+id/video"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            ></VideoView>
+
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar_video"
             android:layout_width="match_parent"
             android:layout_height="45dp"
             app:titleMarginTop="0dp"
-            android:background="#e0000000"
+            android:background="#b0000000"
             app:titleTextColor="#FFFAFA"
             app:navigationIcon="@android:drawable/ic_menu_revert"
+            app:contentInsetStartWithNavigation="0dp"
+            app:contentInsetStart="0dp"
             >
             <TextView
                 android:layout_gravity="left"
-                android:textSize="18sp"
+                android:textSize="15sp"
                 android:text="videopath"
                 android:textColor="#FFFAFA"
                 android:id="@+id/top_vdieopath"
                 android:layout_width="80dp"
-                android:ellipsize="end"
+                android:singleLine="true"
+                android:ellipsize="middle"
                 android:layout_height="wrap_content"/>
             <TextView
                 android:layout_gravity="center"
@@ -45,19 +59,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
         </android.support.v7.widget.Toolbar>
-
-        <VideoView
-            android:id="@+id/video"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            >
-
-
-          </VideoView>
-
-
-
-    </LinearLayout>
+    </RelativeLayout>
 
 </RelativeLayout>

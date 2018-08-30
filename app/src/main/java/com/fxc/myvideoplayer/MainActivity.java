@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     private ListView lv;
     private String moviepath;
     Toolbar mToolbar;
+    int filesum;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < name.size(); i++) {
             Log.i("Log", "list.name:"+ name.get(i));
         }
+        filesum =name.size();
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
@@ -93,6 +95,11 @@ public class MainActivity extends AppCompatActivity {
                 String moviename = moviepathlist.get(position);
                 Intent intent =new Intent(MainActivity.this, MovieActivity.class);
                 intent.putExtra("moviename", moviename);
+                intent.putExtra("filesum",filesum);
+                intent.putExtra("fileno",(position+1));
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("Arraylist",moviepathlist);
+                intent.putExtra("moviepathlist",bundle);
                 startActivity(intent);
 
             }
