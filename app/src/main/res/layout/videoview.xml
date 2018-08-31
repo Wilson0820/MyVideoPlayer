@@ -28,7 +28,7 @@
             app:titleMarginTop="0dp"
             android:background="#b0000000"
             app:titleTextColor="#FFFAFA"
-            app:navigationIcon="@android:drawable/ic_menu_revert"
+            app:navigationIcon="@drawable/ic_arrow_back_white_24dp"
             app:contentInsetStartWithNavigation="0dp"
             app:contentInsetStart="0dp"
             >

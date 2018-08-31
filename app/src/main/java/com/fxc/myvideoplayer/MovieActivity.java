@@ -34,8 +34,8 @@ public class MovieActivity extends AppCompatActivity {
     private String tpathPrew;
     private String tpathNext;
     private ArrayList<String> moviepathlist;
-    private MediaController mController= null;
-    private boolean flag = false;
+    private MyMediaController mController= null;
+   // private boolean flag = false;
     private Handler handler=new Handler();
     private Runnable runnable;
 
@@ -58,8 +58,7 @@ public class MovieActivity extends AppCompatActivity {
             }
         });
         toolbar_video.setVisibility(View.GONE);
-        flag=false;
-        mController = new MediaController(this,false);
+        mController = new MyMediaController(this,false);
         Intent intent = getIntent();
         tpath = intent.getStringExtra("moviename");
         filesum = intent.getIntExtra("filesum",0);
@@ -87,16 +86,40 @@ public class MovieActivity extends AppCompatActivity {
 
             playPrewNextVideo();
         }
+
          runnable= new Runnable() {
             @Override
             public void run() {
                 handler.postDelayed(this,3000);
                 toolbar_video.setVisibility(View.GONE);
-                flag =false ;
+
             }
         };
 
+       /* View.OnTouchListener mTouchListener = new View.OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    if (flag == true){
+                        toolbar_video.setVisibility(View.GONE);
+                        flag = false;
+                    }else{
+                        toolbar_video.setVisibility(View.VISIBLE);
+                        flag = true;
+                        handler.removeCallbacks(runnable);
+                        handler.postDelayed(runnable,3000);
+                    }
+                }
+                return true;
+            }
+        };*/
+
     }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        return super.dispatchTouchEvent(ev);
+    }
+
     public void playPrewNextVideo(){
         mController.setPrevNextListeners(new View.OnClickListener() {
 
@@ -133,7 +156,8 @@ public class MovieActivity extends AppCompatActivity {
                 mController.setMediaPlayer(video);
                 video.start();
                 setTopBarInfo(tpathPrew,fileno,filesum);
-                playPrewNextVideo();}
+                playPrewNextVideo();
+                }
                 else{
                     Toast.makeText(MovieActivity.this, "The first one", Toast.LENGTH_SHORT).show();
                 }
@@ -167,25 +191,28 @@ public class MovieActivity extends AppCompatActivity {
         return;
 
     }
-
    @Override
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()){
             case MotionEvent.ACTION_DOWN:
-                if (flag == true){
-                toolbar_video.setVisibility(View.GONE);
-                flag = false;
-                  }else{
-                toolbar_video.setVisibility(View.VISIBLE);
-                flag = true;
-                handler.removeCallbacks(runnable);
-                handler.postDelayed(runnable,3000);
-                 }
+                showTopMenu();
+
                  break;
                 default:
                     break;
         }
-        return true;
+        return false;
 
+    }
+    public void showTopMenu(){
+        if (toolbar_video.getVisibility()== View.VISIBLE){
+            toolbar_video.setVisibility(View.GONE);
+
+        }else{
+            toolbar_video.setVisibility(View.VISIBLE);
+            handler.removeCallbacks(runnable);
+            handler.postDelayed(runnable,3000);
+
+        }
     }
 }
