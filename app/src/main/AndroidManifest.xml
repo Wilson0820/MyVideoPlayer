@@ -21,7 +21,9 @@
         <activity
             android:name=".MovieActivity"
             android:label="@string/title_activity_movie"
+            android:configChanges="orientation"
             android:theme="@style/AppTheme"
+
             android:launchMode="singleTask"></activity>
     </application>
 

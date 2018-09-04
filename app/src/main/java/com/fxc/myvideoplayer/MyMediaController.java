@@ -1,6 +1,7 @@
 package com.fxc.myvideoplayer;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import com.fxc.myvideoplayer.MovieActivity;
 import android.view.MotionEvent;
@@ -19,7 +20,27 @@ public class MyMediaController extends MediaController {
 
     }
 
+   /* @Override
+    public void hide() {
+        super.show();
+    }
+    */
+   @Override
+   public boolean onInterceptTouchEvent(MotionEvent event) {
+       switch (event.getAction()) {
+           case MotionEvent.ACTION_UP:
+               //showTopMenu();
+               Log.i("showTopMenu();", "onInterceptTouchEvent:showTopMenu();555 ");
+               break;
+           default:
+               break;
+       }
 
+       Log.i("showTopMenu();", "onInterceptTouchEvent:showTopMenu()7777; ");
+
+       return super.onInterceptTouchEvent(event);
+   }
+    @Override
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
@@ -35,7 +56,7 @@ public class MyMediaController extends MediaController {
             default:
                 break;
         }
-        return false;
+        return true;
     }
 
 }

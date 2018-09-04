@@ -8,16 +8,22 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.widget.LinearLayout;
 import android.widget.MediaController;
+import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Timer;
 
 public class MovieActivity extends AppCompatActivity {
 
@@ -35,14 +41,19 @@ public class MovieActivity extends AppCompatActivity {
     private String tpathNext;
     private ArrayList<String> moviepathlist;
     private MyMediaController mController= null;
-   // private boolean flag = false;
     private Handler handler=new Handler();
     private Runnable runnable;
+    private RelativeLayout video_group;
+    private String vno;
+    private String fileindex;
+    private String videono;
+    private int vfileno ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.videoview);
+        video_group=(RelativeLayout)findViewById(R.id.videoactivity);
         video = (VideoView) findViewById(R.id.video);
         toolbar_video = findViewById(R.id.toolbar_video);
         video_path=findViewById(R.id.top_vdieopath);
@@ -83,7 +94,11 @@ public class MovieActivity extends AppCompatActivity {
 
                 }
             });
-
+            Log.i("fileno", "fileindexonClick:222 "+fileindex);
+            //if (fileindex==null)
+                //{vfileno=fileno;}
+           // else {vfileno =Integer.parseInt(videono);}
+           // Log.i("fileno", "onClick:222 "+vfileno);
             playPrewNextVideo();
         }
 
@@ -96,31 +111,74 @@ public class MovieActivity extends AppCompatActivity {
             }
         };
 
-       /* View.OnTouchListener mTouchListener = new View.OnTouchListener() {
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    if (flag == true){
-                        toolbar_video.setVisibility(View.GONE);
-                        flag = false;
-                    }else{
-                        toolbar_video.setVisibility(View.VISIBLE);
-                        flag = true;
-                        handler.removeCallbacks(runnable);
-                        handler.postDelayed(runnable,3000);
-                    }
-                }
-                return true;
-            }
-        };*/
+       /*mController.getViewTreeObserver().dispatchOnGlobalLayout();
+       mController.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+           @Override
+           public void onGlobalLayout() {
+               if (!mController.isShowing()){
+                   hideTitleMenu();
+                   Log.i("onlayoutchange", "onGobalLayoutChange:--hide ");
 
+               }else{
+                   showTitleMenu();
+                   Log.i("onlayoutchange", "onGobalLayoutChange:--show ");
+
+               }
+           }
+       });*/
+      mController.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+           @Override
+           public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+               if (!mController.isShowing()){
+                   hideTitleMenu();
+                   Log.i("onlayoutchange", "onLayoutChange:--hide ");
+
+               }else{
+                   showTitleMenu();
+                   Log.i("onlayoutchange", "onLayoutChange:--show ");
+
+               }
+           }
+       });
     }
 
     @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
-        return super.dispatchTouchEvent(ev);
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        int sec = (int)savedInstanceState.getLong("time");
+        boolean isplay = savedInstanceState.getBoolean("play");
+        String currentpath =savedInstanceState.getString("currentpath");
+        fileindex = savedInstanceState.getString("fileindex");
+        Log.i("path", "onRestoreInstanceState:222 "+currentpath);
+        videono=getFileNo(fileindex);
+        fileno=Integer.parseInt(videono);
+        video.setVideoPath(currentpath);
+        setTopBarInfo(currentpath,fileindex);
+        video.seekTo(sec);
+        if (!isplay)
+        {video.pause();}
+        super.onRestoreInstanceState(savedInstanceState);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        int sec = video.getCurrentPosition();
+        boolean isplay =video.isPlaying();
+        String vpath=video_path.getText().toString();
+        String vname=video_name.getText().toString();
+        vno=video_no.getText().toString();
+        String currentpath= vpath+vname;
+        outState.putString("fileindex",vno);
+        outState.putString("currentpath",currentpath);
+        Log.i("path", "onRestoreInstanceState: 111"+currentpath);
+        outState.putBoolean("play",isplay);
+        outState.putLong("time",sec);
+        //Toast.makeText(this,sec+"s",Toast.LENGTH_SHORT).show();
+        Log.i("onSave", "onSaveInstanceState: 1111");
+        super.onSaveInstanceState(outState);
     }
 
     public void playPrewNextVideo(){
+       // vfileno=fileno;
         mController.setPrevNextListeners(new View.OnClickListener() {
 
             @Override
@@ -137,6 +195,7 @@ public class MovieActivity extends AppCompatActivity {
                 video.start();
                 setTopBarInfo(tpathNext,fileno,filesum);
                 Toast.makeText(MovieActivity.this, "下一個", Toast.LENGTH_SHORT).show();
+                    Log.i("fileno", "onClick:next "+fileno);
                 playPrewNextVideo();
                 }
                 else{
@@ -147,6 +206,8 @@ public class MovieActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
+
+
                 if (fileno>1){
                 Toast.makeText(MovieActivity.this, "上一個", Toast.LENGTH_SHORT).show();
                 fileno=fileno-1;
@@ -156,6 +217,7 @@ public class MovieActivity extends AppCompatActivity {
                 mController.setMediaPlayer(video);
                 video.start();
                 setTopBarInfo(tpathPrew,fileno,filesum);
+                    Log.i("fileno", "onClick:pre "+vfileno);
                 playPrewNextVideo();
                 }
                 else{
@@ -181,6 +243,15 @@ public class MovieActivity extends AppCompatActivity {
             return null;
         }
     }
+    public String getFileNo(String s){
+        int end = s.lastIndexOf("/");
+        Log.i("fileno", "getfileno:111 "+s);
+        if(end!=-1){
+            return s.substring(0,end);
+        }else{
+            return null;
+        }
+    }
     public void setTopBarInfo(String tpath,int fileno,int filesum){
         video_no.setText(fileno+"/"+filesum);
         //video_path.setText(tpath);
@@ -191,19 +262,32 @@ public class MovieActivity extends AppCompatActivity {
         return;
 
     }
-   @Override
+    public void setTopBarInfo(String tpath,String fileindex){
+        video_no.setText(fileindex);
+        //video_path.setText(tpath);
+        videopath = getVideoPath(tpath);
+        video_path.setText(videopath);
+        videoname =getVideoName(tpath);
+        video_name.setText(videoname);
+        return;
+
+    }
+
+  /* @Override
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()){
-            case MotionEvent.ACTION_DOWN:
+
+            case MotionEvent.ACTION_UP:
                 showTopMenu();
 
-                 break;
+                break;
                 default:
                     break;
         }
+        //if (mController.isShowing()){showTopMenu();}
         return false;
 
-    }
+    }*/
     public void showTopMenu(){
         if (toolbar_video.getVisibility()== View.VISIBLE){
             toolbar_video.setVisibility(View.GONE);
@@ -214,5 +298,15 @@ public class MovieActivity extends AppCompatActivity {
             handler.postDelayed(runnable,3000);
 
         }
+    }
+    public void hideTitleMenu()
+    {
+            toolbar_video.setVisibility(View.GONE);
+    }
+    public void showTitleMenu()
+    {
+        toolbar_video.setVisibility(View.VISIBLE);
+        handler.removeCallbacks(runnable);
+        handler.postDelayed(runnable,3000);
     }
 }
