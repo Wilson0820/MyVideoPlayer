@@ -3,6 +3,7 @@ package com.fxc.myvideoplayer;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -110,6 +111,7 @@ public class MovieActivity extends AppCompatActivity {
             public void run() {
                 handler.postDelayed(this,3000);
                 toolbar_video.setVisibility(View.GONE);
+                volbar.setVisibility(View.GONE);
 
             }
         };
@@ -138,6 +140,7 @@ public class MovieActivity extends AppCompatActivity {
 
                }else{
                    showTitleMenu();
+                   showVolbar();
                    Log.i("onlayoutchange", "onLayoutChange:--show ");
 
                }
@@ -149,12 +152,15 @@ public class MovieActivity extends AppCompatActivity {
       currentVol = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
       volbar.setMax(maxVol);
       volbar.setProgress(currentVol);
+      showVolbar();
+      myRegisterReceiver();
       volbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
           @Override
           public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
               audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,progress,0);
               currentVol = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
               volbar.setProgress(currentVol);
+              showVolbar();
           }
 
           @Override
@@ -334,11 +340,26 @@ public class MovieActivity extends AppCompatActivity {
         handler.removeCallbacks(runnable);
         handler.postDelayed(runnable,3000);
     }
+    public void showVolbar()
+    {
+        volbar.setVisibility(View.VISIBLE);
+        handler.removeCallbacks(runnable);
+        handler.postDelayed(runnable,3000);
+    }
+
+    private void myRegisterReceiver(){
+        VolumeReceiver  mVolumeReceiver = new VolumeReceiver() ;
+        IntentFilter filter = new IntentFilter() ;
+        filter.addAction("android.media.VOLUME_CHANGED_ACTION") ;
+        this.registerReceiver(mVolumeReceiver, filter) ;
+    }
+
     public class VolumeReceiver extends BroadcastReceiver{
 
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals("android.media.VOLUME_CHANGED_ACTION")){
+                showVolbar();
                 currentVol = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
                 volbar.setProgress(currentVol);
             }

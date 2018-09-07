@@ -24,11 +24,7 @@
             android:configChanges="orientation"
             android:theme="@style/AppTheme"
             android:launchMode="singleTask"></activity>
-        <receiver android:name=".MovieActivity$VolumeReceiver">
-            <intent-filter>
-                <action android:name="android.media.VOLUME_CHANGED_ACTION"></action>
-            </intent-filter>
-        </receiver>
+
 
     </application>
 
