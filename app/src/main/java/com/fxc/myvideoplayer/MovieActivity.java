@@ -1,6 +1,9 @@
 package com.fxc.myvideoplayer;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
@@ -21,6 +24,8 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
+
+import org.w3c.dom.Node;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -48,7 +53,9 @@ public class MovieActivity extends AppCompatActivity {
     private String fileindex;
     private String videono;
     private int vfileno ;
-
+    private VerticalSeekBar volbar;
+    public  AudioManager audioManager;
+    private int maxVol,currentVol;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,10 +102,6 @@ public class MovieActivity extends AppCompatActivity {
                 }
             });
             Log.i("fileno", "fileindexonClick:222 "+fileindex);
-            //if (fileindex==null)
-                //{vfileno=fileno;}
-           // else {vfileno =Integer.parseInt(videono);}
-           // Log.i("fileno", "onClick:222 "+vfileno);
             playPrewNextVideo();
         }
 
@@ -140,8 +143,31 @@ public class MovieActivity extends AppCompatActivity {
                }
            }
        });
-    }
+      volbar = (VerticalSeekBar) findViewById(R.id.volbar);
+      audioManager=(AudioManager)getSystemService(Context.AUDIO_SERVICE);
+      maxVol = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+      currentVol = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+      volbar.setMax(maxVol);
+      volbar.setProgress(currentVol);
+      volbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+          @Override
+          public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+              audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,progress,0);
+              currentVol = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+              volbar.setProgress(currentVol);
+          }
 
+          @Override
+          public void onStartTrackingTouch(SeekBar seekBar) {
+
+          }
+
+          @Override
+          public void onStopTrackingTouch(SeekBar seekBar) {
+
+          }
+      });
+    }
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         int sec = (int)savedInstanceState.getLong("time");
@@ -178,7 +204,6 @@ public class MovieActivity extends AppCompatActivity {
     }
 
     public void playPrewNextVideo(){
-       // vfileno=fileno;
         mController.setPrevNextListeners(new View.OnClickListener() {
 
             @Override
@@ -308,5 +333,15 @@ public class MovieActivity extends AppCompatActivity {
         toolbar_video.setVisibility(View.VISIBLE);
         handler.removeCallbacks(runnable);
         handler.postDelayed(runnable,3000);
+    }
+    public class VolumeReceiver extends BroadcastReceiver{
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals("android.media.VOLUME_CHANGED_ACTION")){
+                currentVol = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+                volbar.setProgress(currentVol);
+            }
+        }
     }
 }

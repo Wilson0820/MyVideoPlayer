@@ -60,6 +60,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
         </android.support.v7.widget.Toolbar>
+        <com.fxc.myvideoplayer.VerticalSeekBar
+            android:id="@+id/volbar"
+            android:layout_marginTop="50dp"
+            android:layout_centerVertical="true"
+            android:layout_below="@id/toolbar_video"
+            android:layout_width="wrap_content"
+            android:progressDrawable="@drawable/seek_drawable"
+            android:thumb="@drawable/seek_thumb"
+            android:max="10"
+            android:progress="4"
+            android:layout_height="match_parent" />
     </RelativeLayout>
 
 </com.fxc.myvideoplayer.MyRelativeView>
